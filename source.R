@@ -1,9 +1,5 @@
 ##########Wczytanie###########
-source("zad1.R")
-source("zad2.R")
-source("zad3.R")
-source("zad4.R")
-source("zad5.R")
+source("Zadania.R")
 ##########Odczyt danych###########
 dane1 <- read.table("dane1.txt", quote="\"", comment.char="")
 dane2 <- read.table("dane2.txt", quote="\"", comment.char="")

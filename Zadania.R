@@ -1,3 +1,5 @@
+#-------------------ZAD1-------------------
+
 ####################Funkcje pomocnicze#####################
 
 #Obliczie kwartyli
@@ -138,4 +140,205 @@ zad1<- function(wektor_stara, wektor_nowa)
   t = data.frame(szczegolowy_nowa = wynik_szczegolowy_nowa, szczegolowy_stara = wynik_szczegolowy_stara, rozdzielczy_nowa = wynik_rozdzielczy_nowa, rozdzielczy_stara = wynik_rozdzielczy_stara)
   row.names(t) = c("Srednia arytmetyczna:", "Srednia harmoniczna:", "Srednia geometryczna:", "Kwartyl 0.25", "Kwartyl 0.75:", "Mediana:", "Dominanta:","Rozstęp wyników:", "Rozstęp międzyćwiartkowy:", "Wariancja próbkowa:", "Odchylenie standardowe:", "Odchylenie od Średniej:", "Odchylenie od Mediany:", "Współczynnik zmienności:", "Skośność:", "Kurtoza:", "Excess:")
   print(t)
+}
+
+#-------------------ZAD2-------------------
+test <- function(wektor) 
+{
+  
+  wektor = sort(wektor) # sortowanie danych
+  n = length(wektor) # sprawdzenie ilosci elementow
+  
+  # przyjmowanie odpowiedniego k z tablicy testu w zaleznosci od liczby elementow
+  if(length(wektor) == 37) { k = 0.1457 }
+  else { k = 0.1279 }
+  
+  p = pnorm((wektor - mean(wektor))/sd(wektor))
+  # pnorm - The Normal Distribution - rozklad normalny
+  # mean - Arithmetic Mean - srednia arytmetyczna
+  # sd - Standard Deviation - odchylenie standardowe 
+  
+  Dplus = max(seq(1:n)/n - p)
+  Dminus = max(p - (seq(1:n) - 1)/n)
+  
+  # seq - Sequence Generation
+  
+  D = max(Dplus, Dminus)
+  
+  cat("wartosc D wynosi:", D, "\n")
+  cat("wartosc k wynosi:", k,"\n")
+  
+  if(D < k) 
+  { cat("Wydajnosci pracy maja rozklad normalny.\n") } 
+  else 
+  { cat("Wydajnosci pracy nie maja rozkladu normalnego.\n") }
+  
+}
+
+###################Funkcja ostateczna###################
+zad2 <- function(wektor_stara, wektor_nowa)
+{
+  cat("Dane 1 (stara hala):\n") 
+  test(wektor_stara)
+  cat("Dane 2 (nowa hala):\n") 
+  test(wektor_nowa)
+}
+
+#-------------------ZAD3-------------------
+
+zad3<- function(vector)
+{
+  n=length(vector)   #wielkosc proby
+  sigma=sd(vector)   #probkowe oszacowanie odchylenia standardowego
+  
+  d=qt(.975, df=n-1)*sigma/sqrt(n) #bezwzgedny blad szacunku
+  xsr=mean(vector)  #srednia arytmetyczna
+  
+  interval=xsr+c(-d,d)
+  precision=d/xsr*100
+  
+  print('Interwal‚ estymacji przedzialowej o dokladnosci 95%:')
+  print(round(interval,4))
+  print('Wzgledna precyzja oszacowania:')
+  print(round(precision,4))
+}
+
+#-------------------ZAD4-------------------
+
+zad4<- function(wektor)
+{
+  
+  #średnia z próby
+  mu=mean(wektor)
+  
+  #odchylenie standardowe
+  sigma<-sd(wektor)
+  
+  #ilosc danych
+  n=length(wektor)
+  
+  #przedział ufności 95%
+  round(mu+c(-1,1)*sigma/sqrt(n)*qnorm(.975),2)
+  
+  #bezwzględny błąd szacunku
+  d=qt(.975, df=n-1)*sigma/sqrt(n)
+  
+  #przedział 
+  interval=mu+c(-d,d)
+  
+  #precyzja 
+  precision=d/mu*100
+  
+  print('Interwal‚ estymacji przedzialowej o dokladnosci 95%:')
+  print(round(interval,4))
+  
+  print('Wzgledna precyzja oszacowania:')
+  print(round(precision,4))
+}
+
+#-------------------ZAD5-------------------
+
+test_fishera<- function(dane1, dane2, p_istotnosci)
+{
+  cat("TEST FISHERA\n")
+  cat("H0: Wariancje wydajnosci pracy sa sobie rowne\n")
+  cat("H1: Wariancje wydajnosci pracy sa rozne od siebie\n")
+  
+  wariancja1 = var(dane1)
+  wariancja2 = var(dane2)
+  
+  n1 = length(dane1)
+  n2 = length(dane2)
+  
+  if(wariancja1 > wariancja2)
+  {
+    Statystyka = wariancja1 / wariancja2
+    Kwantyl = qf(1 - p_istotnosci, n1 - 1, n2 - 1)
+  }
+  else
+  {
+    Statystyka = wariancja2 / wariancja1
+    Kwantyl = qf(1 - p_istotnosci, n2 - 1, n1 - 1)
+  }
+  
+  cat("Statystyka testowa F = ", Statystyka, "\n")
+  cat("Obszar krytyczny K_0 = (", Kwantyl, ", +oo)\n")
+  
+  if (Statystyka > Kwantyl)
+  {
+    cat("Wartosc statystyki zawiera sie w obszarze krytycznym.\n")
+    cat("Odrzucamy hipoteze zerowa na rzecz hipotezy alternatywnej.\n")
+    cat("Na poziomie istotnosci ", p_istotnosci, "mozna przyjac hipoteze alternatywna.\n")
+    
+    return (0)
+  }
+  else
+  {
+    cat("Wartosc statystyki NIE zawiera sie w obszarze krytycznym.\n")
+    cat("Brak podstaw do odrzucenia hipotezy zerowej.\n")
+    return (0)
+  }
+}
+
+test_CochranaCoxa <- function(dane1, dane2, p_istotnosci)
+{
+  cat("Sprwdzamy czy srednia wydajnosc pracy przy produkcji elementu w starej hali za pomoca testu Cochrana-Coxa")  
+  cat("H0: Srednia wydajnosc pracy w obu fabrykach jest rowna.\n")
+  cat("H1: Srednia wydajnosc pracy w starej fabryce jest wieksza.\n")
+  wariancja1 = var(dane1)
+  wariancja2 = var(dane2)
+  n1 = length(dane1)
+  n2 = length(dane2)
+  Statystyka = (mean(dane1) - mean(dane2)) / (sqrt((dane1/n1) + (dane2/n2)))
+  Stopnie_swobody = round(((dane1/n1 + dane2/n2)^2) / (((dane1/n1)^2)/(n1+1) + ((dane2/n2)^2)/(n2+1)) - 2)
+  Kwantyl = qt(1 - p_istotnosci, Stopnie_swobody)
+  cat("Statystyka = ", Statystyka, "\n")
+  cat("Obszar krytyczny K = < ", Kwantyl, " , + oo)\n" )
+  if( Statystyka < Kwantyl)
+  {
+    cat("Brak podstaw by odrzucic hipoteze zerowa.\n 
+        Na poziomie istotnosci 0,05 nie mozna twierdzic ze wydajnosc
+        pracy przy produkcji elementu w starej hali jest wieksza.")
+  }
+  else
+  {
+    cat("Odrzucamy hipoteze zerowa na rzeczy hipotezy alternatywnej.\n
+        Na poziomie istotnosci 0,05 mozna twierdzic ze wydajnosc
+        pracy przy produkcji elementu w starej hali jest wieksza.")
+  }
+}
+
+test_tStudenta <- function(dane1, dane2, p_istotnosci)
+{
+  cat("TEST T-STUDENTA\n")
+  cat("H0: Srednia wydajnosc pracy w hali starej i nowej jest taka sama\n")
+  cat("H1: Srednia wydajnosc pracy w hali starej jest wieksza\n")
+  
+  wariancja1 = var(dane1)
+  wariancja2 = var(dane2)
+  n1 = length(dane1)
+  n2 = length(dane2)
+  Statystyka = (mean(dane1) - mean(dane2)) / sqrt( (1/n1 + 1/n2)*(n1*wariancja1 + n2*wariancja2)/(n1+n2-2) )
+  Kwantyl = qt(1 - p_istotnosci, n1 + n2 - 2)
+  
+  cat("Statystyka = ", Statystyka, "\n")
+  cat("Obszar krytyczny K_0 = < ", Kwantyl, " , +oo)\n")
+  
+  if( Statystyka < Kwantyl)
+  {
+    cat("Wartosc statystyka NIE miesci sie w obszarze krytycznym.\n")
+    cat("Brak podstaw do odrzucenia hipotezy zerowej.\n")
+  }
+  else
+  {
+    cat("Wartosc statystyki miesci sie w obszarze krytycznym.\n")
+    cat("Odrzucamy hipoteze zerowa na rzecz hipotezy alterantywnej.\n")
+  }
+}
+
+zad5 <- function (dane1, dane2, p_istotnosci)
+{
+  test_fishera(dane1,dane2,p_istotnosci)
+  test_CochranaCoxa(dane1,dane2,p_istotnosci)
+  test_tStudenta(dane1,dane2,p_istotnosci)
 }
