@@ -10,18 +10,18 @@ kwartyl <- function(sr, q)
   liczebnoscSkumulowana <- sr$counts
   for(i in 1:length(sr$counts))
   {
-    liczebnoscSkumulowana[i] = sum(sr$counts[1:i]) #obliczenie liczebnosci skumulowanej dla każdego przedzialu
+    liczebnoscSkumulowana[i] = sum(sr$counts[1:i]) #obliczenie liczebnosci skumulowanej dla kazdego przedzialu
   }
   j = 1;
-  while(TRUE) #pętla szukająca pozycji kwartyla
+  while(TRUE) #petla szukajaca pozycji kwartyla
   {
     if(poz.kwartyla < liczebnoscSkumulowana[j])
       break
     else
       j = j + 1
   }
-  dolnaWartoscPrzedzialu = sr$breaks[j] #dolna wartość przedziału kwartyla
-  liczebnoscSkumulowanaPoprzedniego = liczebnoscSkumulowana[j - 1] #liczebność skumulowana przedziału poprzedzającego
+  dolnaWartoscPrzedzialu = sr$breaks[j] #dolna wartosc przedzialu kwartyla
+  liczebnoscSkumulowanaPoprzedniego = liczebnoscSkumulowana[j - 1] #liczebnosc skumulowana przedzialu poprzedzajacego
   rozpietosc = sr$breaks[j + 1] - dolnaWartoscPrzedzialu
   wynik = dolnaWartoscPrzedzialu + ((poz.kwartyla - liczebnoscSkumulowanaPoprzedniego) * rozpietosc / liczebnoscSkumulowana[j])
   return(wynik)
@@ -29,44 +29,44 @@ kwartyl <- function(sr, q)
 
 ##Obliczanie Dominant
 
-dominantaSzczegolowy <- function(wektor) #Szereg szczegółowy
+dominantaSzczegolowy <- function(wektor) #Szereg szczeg�lowy
 {
-  uni_wekt <- unique(wektor) #wektor tylko z wartościami unikalnymi
+  uni_wekt <- unique(wektor) #wektor tylko z wartosciami unikalnymi
   rozmiar <- length(uni_wekt) #rozmiar utworzonego wektora
   
-  ilosc_wys <- vector(mode="numeric", length=rozmiar)#Vector ilości wystąpień unikalnych elemntów w wektorze
+  ilosc_wys <- vector(mode="numeric", length=rozmiar)#Vector ilosci wystapien unikalnych elemnt�w w wektorze
   
   for(i in 1:rozmiar)#Ustawienie poczatkowych wartosci wektora
   {
-    ilosc_wys[i] <- sum(wektor == uni_wekt[i]) #Przypisanie ilości wsytąpień wartości unikalnej w danch 
+    ilosc_wys[i] <- sum(wektor == uni_wekt[i]) #Przypisanie ilosci wsytapien wartosci unikalnej w danch 
   }
-  #ifelse warunek, co gdy prawda, co gdy fałsz
-  #Jeżeli długość wektora złożonego z elemntów o wartości równej maksymalnej w wartości w tym wektorze jest większa od jeden
-  #True to zwróć NA (Not Available)
-  #False to zwróć wartość z wektora unikalnego which.max(podaje indek elemntu o wartości max, a indexy ilosc_wys i uni_wek odpowiadają sobie)
+  #ifelse warunek, co gdy prawda, co gdy falsz
+  #Jezeli dlugosc wektora zlozonego z elemnt�w o wartosci r�wnej maksymalnej w wartosci w tym wektorze jest wieksza od jeden
+  #True to zwr�c NA (Not Available)
+  #False to zwr�c wartosc z wektora unikalnego which.max(podaje indek elemntu o wartosci max, a indexy ilosc_wys i uni_wek odpowiadaja sobie)
   return (ifelse( length(ilosc_wys[ilosc_wys == max(ilosc_wys)]) > 1 , NA , uni_wekt[which.max(ilosc_wys)] ))
 }
 
 dominantaRozdzielczy <- function(wektor) #Szereg rozdzielczy
 {
-  nr_przedz = which.max(wektor$counts) #nr przedziału w histogramie o największej liczebności
+  nr_przedz = which.max(wektor$counts) #nr przedzialu w histogramie o najwiekszej liczebnosci
   
-  x0 = wektor$breaks[nr_przedz]             #dolna granica przedziału z modą
-  n_minus = wektor$counts[nr_przedz - 1]   #liczebnosc przedzialu poprzedzającego modę
-  n_0      = wektor$counts[nr_przedz]       #liczebnosc przedzialu z modą
-  n_plus  = wektor$counts[nr_przedz + 1]   #liczebnosc przedziału następującego po modzie
-  rozpietoscPrzedzialu = wektor$breaks[nr_przedz+1] - wektor$breaks[nr_przedz] #rozpietosc przedzialu z modą
+  x0 = wektor$breaks[nr_przedz]             #dolna granica przedzialu z moda
+  n_minus = wektor$counts[nr_przedz - 1]   #liczebnosc przedzialu poprzedzajacego mode
+  n_0      = wektor$counts[nr_przedz]       #liczebnosc przedzialu z moda
+  n_plus  = wektor$counts[nr_przedz + 1]   #liczebnosc przedzialu nastepujacego po modzie
+  rozpietoscPrzedzialu = wektor$breaks[nr_przedz+1] - wektor$breaks[nr_przedz] #rozpietosc przedzialu z moda
   
   wynik = x0 + ( (n_0 - n_minus) / ( (n_0 - n_minus) + (n_0 - n_plus) ) * rozpietoscPrzedzialu) 
   return (wynik)
 }
 
-####################Funkcje wyznaczające wartości dla szeregów#####################
+####################Funkcje wyznaczajace wartosci dla szereg�w#####################
 
 zad1_rozdzielczy <- function(wektor)#Rozdzielczy
 {
   sr <- hist(wektor)
-  #miary przeciętne
+  #miary przecietne
   sredniaArytmetyczna = sum(sr$counts * sr$mids) / sum(sr$counts)
   sredniaHarmoniczna = sum(sr$counts) / sum(sr$counts / sr$mids)
   sredniaGeometryczna = (prod(sr$mids ^ sr$counts)) ^ (1 / sum(sr$counts))
@@ -75,32 +75,33 @@ zad1_rozdzielczy <- function(wektor)#Rozdzielczy
   mediana = kwartyl(sr, 0.5)
   modaDominanta = dominantaRozdzielczy(sr)
   
-  #miary zróżnicowania
-  wariancja = sum(((sr$mids-sredniaArytmetyczna) ^ 2) * sr$counts) / sum(sr$counts)
+  #miary zr�znicowania
   rozstepMiedzycwiartkowy = kwartyl0.75 - kwartyl0.25
-  odchylenieStandardowe = sqrt(wariancja)
-  wspolczynnikZmiennosci = odchylenieStandardowe / sredniaArytmetyczna
   rozstepWynikow = max(sr$breaks) - min(sr$breaks)
-  odchyleniePrzecietne = sum(abs(sr$mids - sredniaArytmetyczna)*sr$counts) / sum(sr$counts) #Odchylenie przeciętne od średniej arytmetycznej
+  wariancjaObciazona = sum(((sr$mids-sredniaArytmetyczna) ^ 2) * sr$counts) / sum(sr$counts)
+  wariancjaNieobciazona = wariancjaObciazona * (sum(sr$counts)/(sum(sr$counts)-1))
+  odchylenieStandardoweObc = sqrt(wariancjaObciazona)
+  wspolczynnikZmiennosci = odchylenieStandardoweObc / sredniaArytmetyczna
+  odchyleniePrzecietne = sum(abs(sr$mids - sredniaArytmetyczna)*sr$counts) / sum(sr$counts) #Odchylenie przecietne od sredniej arytmetycznej
   odchylenieCwiartkowe = (kwartyl0.75 - kwartyl0.25) / 2
   
   #miary asymetrii
-  skosnosc = (sum(((sr$mids-sredniaArytmetyczna) ^ 3) * sr$counts) / sum(sr$counts)) / (odchylenieStandardowe ^ 3)
+  skosnosc = (sum(((sr$mids-sredniaArytmetyczna) ^ 3) * sr$counts) / sum(sr$counts)) / (odchylenieStandardoweObc ^ 3)
   
   #miary koncentracji
-  kurtoza = (sum(((sr$mids-sredniaArytmetyczna) ^ 4) * sr$counts) / sum(sr$counts)) / (odchylenieStandardowe ^ 4)
+  kurtoza = (sum(((sr$mids-sredniaArytmetyczna) ^ 4) * sr$counts) / sum(sr$counts)) / (odchylenieStandardoweObc ^ 4)
   excess = kurtoza - 3
   
-  wynik <- c(sredniaArytmetyczna, sredniaHarmoniczna, sredniaGeometryczna, kwartyl0.25, kwartyl0.75, mediana, modaDominanta, rozstepWynikow, rozstepMiedzycwiartkowy, wariancja, odchylenieStandardowe, odchyleniePrzecietne, odchylenieCwiartkowe, wspolczynnikZmiennosci, skosnosc, kurtoza, excess)
+  wynik <- c(sredniaArytmetyczna, sredniaHarmoniczna, sredniaGeometryczna, kwartyl0.25, kwartyl0.75, mediana, modaDominanta, rozstepWynikow, rozstepMiedzycwiartkowy, wariancjaObciazona, wariancjaNieobciazona, odchylenieStandardoweObc, odchyleniePrzecietne, odchylenieCwiartkowe, wspolczynnikZmiennosci, skosnosc, kurtoza, excess)
   return(wynik)
 }
 
 
-zad1_szczegolowy <- function(wektor)#Szczegółowy
+zad1_szczegolowy <- function(wektor)#Szczeg�lowy
 {
   ss = sort(wektor)
   
-  #miary przeciętne
+  #miary przecietne
   sredniaArytmetyczna = mean(ss)
   sredniaHarmoniczna = 1 / mean(1 / ss)
   sredniaGeometryczna = prod(ss) ^ (1 / length(ss))
@@ -109,23 +110,24 @@ zad1_szczegolowy <- function(wektor)#Szczegółowy
   mediana = median(ss)
   modaDominanta = dominantaSzczegolowy(ss)
   
-  #miary zróżnicowania
+  #miary zr�znicowania
   rozstepWynikow = max(ss) - min(ss)
   rozstepMiedzycwiartkowy = kwartyl0.75 - kwartyl0.25
-  wariancja = var(ss)
-  odchylenieStandardowe = sqrt(wariancja)
-  wspolczynnikZmiennosci = odchylenieStandardowe / sredniaArytmetyczna
-  odchyleniePrzecietne = sum(abs(ss - sredniaArytmetyczna)) / length(ss) #Odchylenie przeciętne od średniej arytmetycznej
+  wariancjaNieobciazona = var(ss)
+  wariancjaObciazona = var(ss) * (length(ss)-1)/length(ss)
+  odchylenieStandardoweObc = sqrt(wariancjaObciazona)
+  wspolczynnikZmiennosci = odchylenieStandardoweObc / sredniaArytmetyczna
+  odchyleniePrzecietne = sum(abs(ss - sredniaArytmetyczna)) / length(ss) #Odchylenie przecietne od sredniej arytmetycznej
   odchylenieCwiartkowe = (kwartyl0.75 - kwartyl0.25) / 2
   
   #miary asymetrii
-  skosnosc = (sum((ss - sredniaArytmetyczna) ^ 3) / length(ss)) / (odchylenieStandardowe^ 3)
+  skosnosc = (sum((ss - sredniaArytmetyczna) ^ 3) / length(ss)) / (odchylenieStandardoweObc^ 3)
   
   #miary koncentracji
-  kurtoza = (sum((ss - sredniaArytmetyczna) ^ 4) / length(ss)) / (odchylenieStandardowe^ 4)
+  kurtoza = (sum((ss - sredniaArytmetyczna) ^ 4) / length(ss)) / (odchylenieStandardoweObc^ 4)
   excess = kurtoza - 3
   
-  wynik <- c(sredniaArytmetyczna, sredniaHarmoniczna, sredniaGeometryczna, kwartyl0.25, kwartyl0.75, mediana, modaDominanta, rozstepWynikow, rozstepMiedzycwiartkowy, wariancja, odchylenieStandardowe, odchyleniePrzecietne, odchylenieCwiartkowe, wspolczynnikZmiennosci, skosnosc, kurtoza, excess)
+  wynik <- c(sredniaArytmetyczna, sredniaHarmoniczna, sredniaGeometryczna, kwartyl0.25, kwartyl0.75, mediana, modaDominanta, rozstepWynikow, rozstepMiedzycwiartkowy, wariancjaObciazona, wariancjaNieobciazona, odchylenieStandardoweObc, odchyleniePrzecietne, odchylenieCwiartkowe, wspolczynnikZmiennosci, skosnosc, kurtoza, excess)
   return(wynik)
 }
 
@@ -138,7 +140,7 @@ zad1<- function(wektor_stara, wektor_nowa)
   wynik_rozdzielczy_stara = zad1_rozdzielczy(wektor_stara)
   wynik_rozdzielczy_nowa = zad1_rozdzielczy(wektor_nowa)
   t = data.frame(szczegolowy_nowa = wynik_szczegolowy_nowa, szczegolowy_stara = wynik_szczegolowy_stara, rozdzielczy_nowa = wynik_rozdzielczy_nowa, rozdzielczy_stara = wynik_rozdzielczy_stara)
-  row.names(t) = c("Srednia arytmetyczna:", "Srednia harmoniczna:", "Srednia geometryczna:", "Kwartyl 0.25", "Kwartyl 0.75:", "Mediana:", "Dominanta:","Rozstęp wyników:", "Rozstęp międzyćwiartkowy:", "Wariancja próbkowa:", "Odchylenie standardowe:", "Odchylenie od Średniej:", "Odchylenie od Mediany:", "Współczynnik zmienności:", "Skośność:", "Kurtoza:", "Excess:")
+  row.names(t) = c("Srednia arytmetyczna:", "Srednia harmoniczna:", "Srednia geometryczna:", "Kwartyl 0.25", "Kwartyl 0.75:", "Mediana:", "Dominanta:","Rozstep wynik�w:", "Rozstep miedzycwiartkowy:", "Wariancja obciazona:", "Wariancja nieobciazona:", "Odchylenie standardowe:", "Odchylenie od Sredniej:", "Odchylenie od Mediany:", "Wsp�lczynnik zmiennosci:", "Skosnosc:", "Kurtoza:", "Excess:")
   print(t)
 }
 
@@ -197,7 +199,7 @@ zad3<- function(vector)
   interval=xsr+c(-d,d)
   precision=d/xsr*100
   
-  print('Interwal‚ estymacji przedzialowej o dokladnosci 95%:')
+  print('Interwal� estymacji przedzialowej o dokladnosci 95%:')
   print(round(interval,4))
   print('Wzgledna precyzja oszacowania:')
   print(round(precision,4))
@@ -208,7 +210,7 @@ zad3<- function(vector)
 zad4<- function(wektor)
 {
   
-  #średnia z próby
+  #srednia z pr�by
   mu=mean(wektor)
   
   #odchylenie standardowe
@@ -217,19 +219,19 @@ zad4<- function(wektor)
   #ilosc danych
   n=length(wektor)
   
-  #przedział ufności 95%
+  #przedzial ufnosci 95%
   round(mu+c(-1,1)*sigma/sqrt(n)*qnorm(.975),2)
   
-  #bezwzględny błąd szacunku
+  #bezwzgledny blad szacunku
   d=qt(.975, df=n-1)*sigma/sqrt(n)
   
-  #przedział 
+  #przedzial 
   interval=mu+c(-d,d)
   
   #precyzja 
   precision=d/mu*100
   
-  print('Interwal‚ estymacji przedzialowej o dokladnosci 95%:')
+  print('Interwal� estymacji przedzialowej o dokladnosci 95%:')
   print(round(interval,4))
   
   print('Wzgledna precyzja oszacowania:')
