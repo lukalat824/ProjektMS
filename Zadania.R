@@ -278,7 +278,7 @@ test_fishera<- function(dane1, dane2, p_istotnosci)
   {
     cat("Wartosc statystyki NIE zawiera sie w obszarze krytycznym.\n")
     cat("Brak podstaw do odrzucenia hipotezy zerowej.\n")
-    return (0)
+    return (1)
   }
 }
 
@@ -340,7 +340,13 @@ test_tStudenta <- function(dane1, dane2, p_istotnosci)
 
 zad5 <- function (dane1, dane2, p_istotnosci)
 {
-  test_fishera(dane1,dane2,p_istotnosci)
-  test_CochranaCoxa(dane1,dane2,p_istotnosci)
-  test_tStudenta(dane1,dane2,p_istotnosci)
+  wynik_testu = test_fishera(dane1,dane2,p_istotnosci)
+  if(wynik_testu == 1)
+  {
+    test_tStudenta(dane1,dane2,p_istotnosci)
+  }
+  else
+    {
+    test_CochranaCoxa(dane1,dane2,p_istotnosci)
+  }
 }
